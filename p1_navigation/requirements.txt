@@ -1,0 +1,5 @@
+# fist, install conda Python 3.6 env and create `drlnd` venv: https://github.com/udacity/deep-reinforcement-learning#dependencies
+mlagents
+gym[box2d,control]
+matplotlib
+tqdm
