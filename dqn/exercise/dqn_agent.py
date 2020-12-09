@@ -85,8 +85,36 @@ class Agent():
         """
         states, actions, rewards, next_states, dones = experiences
 
-        ## TODO: compute and minimize the loss
-        "*** YOUR CODE HERE ***"
+        if False:
+            # Construct one-step TD targets using target network
+            with torch.no_grad():
+                next_action_values = self.qnetwork_target(next_states).cpu().detach().numpy()
+            next_q_values = np.max(next_action_values, axis=1)
+            targets = []
+            for reward, next_q_value, done in zip(rewards, next_q_values, dones):
+                targets.append(reward + gamma * (1-done) * next_q_value)
+        
+            # Compute MSE
+            action_values = self.qnetwork_local(states)
+            t_actions = torch.tensor(actions, dtype=torch.long, device=device)
+            q_sa_values = action_values.gather(1, t_actions.view(-1,1))
+            t_targets = torch.tensor(targets, device=device)
+            loss = torch.mean(torch.square(q_sa_values - t_targets))
+        
+        else:
+            # Construct one-step TD targets using target network
+            with torch.no_grad():
+                next_q_values = self.qnetwork_target(next_states).detach().max(1)[0].unsqueeze(1)
+            targets = rewards + gamma * (1 - dones) * next_q_values
+
+            # Compute MSE
+            action_values = self.qnetwork_local(states)
+            q_sa_preds = action_values.gather(1, actions)
+            loss = torch.mean(torch.square(q_sa_preds - targets))
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
 
         # ------------------- update target network ------------------- #
         self.soft_update(self.qnetwork_local, self.qnetwork_target, TAU)                     
