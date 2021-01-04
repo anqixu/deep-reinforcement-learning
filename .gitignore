@@ -103,7 +103,8 @@ ENV/
 # mypy
 .mypy_cache/
 
-Banana_Linux*
-Reacher_Linux*
+Banana_*
+Reacher_*
+Tennis_*
 .vscode/
 runs/
