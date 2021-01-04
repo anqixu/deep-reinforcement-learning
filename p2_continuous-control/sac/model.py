@@ -127,7 +127,7 @@ class GaussianPolicy(nn.Module):
         log_prob -= torch.log(self.action_scale * (1 - y_t.pow(2)) + epsilon)
         log_prob = log_prob.sum(1, keepdim=True)
         shifted_squashed_mean = torch.tanh(mean) * self.action_scale + self.action_bias
-        return action, log_prob, shifted_squashed_mean, mean, std
+        return action, log_prob, mean
 
     def to(self, device):
         self.action_scale = self.action_scale.to(device)
@@ -171,7 +171,7 @@ class DeterministicPolicy(nn.Module):
         noise = self.noise.normal_(0.0, std=std_value)
         noise = noise.clamp(-0.25, 0.25)  # practically limit to +/- 2.5*stdev
         action = mean + noise
-        return action, torch.tensor(0.0), mean, mean, torch.tensor([std_value] * state.shape[1])
+        return action, torch.tensor(0.0), mean
 
     def to(self, device):
         self.action_scale = self.action_scale.to(device)

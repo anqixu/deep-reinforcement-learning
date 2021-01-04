@@ -106,3 +106,4 @@ ENV/
 Banana_Linux*
 Reacher_Linux*
 .vscode/
+runs/
